@@ -1,0 +1,263 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cage Page - SSAutomation Solutions</title>
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+    <style>
+        /* General styles */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+
+        .nav {
+            height: 50px;
+            padding: 20px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #d3d3d3;
+            color: #ffffff;
+        }
+
+        .nav .logo {
+            background-color: #ffffff;
+            padding: 5px;
+            border-radius: 5px;
+        }
+
+        .nav .logo img {
+            height: 60px;
+        }
+
+        .nav .buttons a {
+            color: #66a3ff;
+            text-decoration: none;
+            padding: 10px 20px;
+            margin: 0 10px;
+            font-size: 16px;
+            background-color: #333333;
+            border: 2px solid #ffffff;
+            border-radius: 5px;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+
+        .nav .buttons a:hover {
+            background-color: #000000;
+            transform: scale(1.1);
+            color: #ffffff;
+        }
+
+        .container {
+            padding: 20px;
+            text-align: center;
+        }
+
+        .stats-container {
+            display: flex;
+            flex-direction: row;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-bottom: 20px;
+            padding: 20px;
+        }
+
+        .stats-box {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 25px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            padding: 20px;
+            width: 25%;
+            min-width: 200px;
+            height: 150px;
+            margin: 10px;
+            backdrop-filter: blur(10px);
+            transition: all 0.2s ease;
+            cursor: pointer;
+            position: relative;
+            border-bottom: 3px solid #000000;
+            border-top: 3px solid #000000;
+        }
+
+        .stats-box:hover {
+            box-shadow: 0 6px 14px rgba(0, 0, 0, 0.2);
+            transform: translateY(-5px);
+        }
+
+        .stats-box:hover .label {
+            font-size: 25px;
+        }
+
+        .stats-box .label {
+            font-size: 18px;
+            margin: 0;
+            position: absolute;
+            top: 50px;
+            left: 50%;
+            transform: translateX(-50%);
+            transition: font-size 0.2s ease;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .stats-box .count {
+            font-size: 30px;
+            position: absolute;
+            bottom: 20px;
+            top: 100px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #333;
+        }
+
+        .stats-ok { background-color: rgba(0, 255, 0, 0.3); }
+        .stats-not-ok { background-color: rgba(255, 0, 0, 0.3); }
+        .stats-total { background-color: rgba(0, 0, 255, 0.3); }
+
+        .button-container {
+            margin-top: 30px;
+            text-align: center;
+        }
+
+        .button-container a {
+            background-color: #008cba;
+            border: none;
+            color: white;
+            padding: 15px 32px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 2px;
+            transition-duration: 0.4s;
+            cursor: pointer;
+            border-radius: 5px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .button-container a:hover {
+            background-color: #005f74;
+            color: white;
+        }
+
+        .footer {
+            padding: 20px;
+            background-color: #004080;
+            color: #ffffff;
+            text-align: center;
+        }
+
+        .production-details {
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 25px;
+            font-size: 1.9em;
+	    background-color: #d3d3d3;
+            border-top: 3px solid #000000;
+            transition: background-color 0.5s ease, font-size 0.3s ease;
+        }
+
+        .machine-status {
+            padding: 20px;
+            margin-left: 150px;
+            border-radius: 5px;
+            width:900px;
+            border-bottom: 3px solid #000000;
+            transition: background-color 0.5s ease, font-size 0.3s ease;
+            font-size: 1.1em;
+            background-color: #d3d3d3;
+        }
+        
+	.machine-status:hover {
+	    background-color: #c0c0c0; /* Slightly darker gray on hover */
+	    transform: scale(1.02); /* Slight zoom effect */
+	    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.8); /* Add a shadow */
+	}
+
+        /* Media Queries */
+        @media (max-width: 768px) {
+            .nav {
+                flex-direction: column;
+                height: auto;
+            }
+            .nav .buttons {
+                margin-top: 10px;
+            }
+            .nav .buttons a {
+                margin: 5px 0;
+            }
+            .stats-container {
+                flex-direction: column;
+            }
+            .stats-box {
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .stats-box {
+                width: 80%;
+                min-width: 150px;
+                height: 120px;
+            }
+            .stats-box .label {
+                font-size: 16px;
+            }
+            .stats-box .count {
+                font-size: 24px;
+            }
+            .status-check img {
+                height: 200px;
+                width: 200px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Second Header -->
+    <div class="nav">
+        <div class="logo">
+            <img src="data:image/png;base64,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" alt="Logo" style="height: 60px;"> <!-- Replace with your logo -->
+        </div>
+        <div class="buttons">
+            <a href="/">Home</a>
+            <a href="user_history">User History</a>
+            <a href="contact">contact us</a>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="production-details">
+            About US
+        </div><br>
+		<div class="stats-container">
+			<img src="{% static 'img9.jpg' %}" alt="OK Count Icon" style="width: 350px; height: 250px; padding:-150px;">
+	
+		    <div >
+			<img src="{% static 'img6.png' %}" alt="OK Count Icon" style="width: 350px; height: 250px; padding:-150px;">
+		    </div>
+		    <div >
+			<img src="{% static 'img10.jpg' %}" alt="OK Count Icon" style="width: 350px; height: 250px; padding:-150px;">
+		    </div>
+		</div>
+
+        <div class="machine-status">
+            We are dedicated to providing exceptional healthcare services to our patients.  
+            Our state-of-the-art facilities, expert medical staff, and commitment to excellence  
+            make us a trusted name in the healthcare industry. Explore our website to learn  
+            more about our services and achievements.
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+        <p>&copy; 2024 Hospital Website. All rights reserved.</p>
+    </div>
+
+</body>
+</html>

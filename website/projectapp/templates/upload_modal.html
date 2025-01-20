@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Data</title>
+    <style>
+        /* Modal Styles */
+        .modal {
+            
+            position: fixed;
+            z-index: 1; /* Sit on top */
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto; /* Enable scroll if needed */
+            background-color: rgba(0, 0, 0, 0.4); /* Black with opacity */
+            padding-top: 60px;
+        }
+
+        /* Modal Content */
+        .modal-content {
+            background-color: #fff;
+            margin: 5% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 500px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Close Button */
+        .close {
+            color: #aaa;
+            font-size: 28px;
+            font-weight: bold;
+            position: absolute;
+            top: 10px;
+            right: 20px;
+            cursor: pointer;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: #000;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        /* Form Styles */
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 14px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            height: 120px;
+        }
+
+        .buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+
+        .submit-btn,
+        .cancel-btn {
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .submit-btn {
+            background-color: #4CAF50; /* Green */
+            color: white;
+        }
+
+        .submit-btn:hover {
+            background-color: #45a049;
+        }
+
+        .cancel-btn {
+            background-color: #f44336; /* Red */
+            color: white;
+        }
+
+        .cancel-btn:hover {
+            background-color: #e53935;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Button to open Modal -->
+    <!-- <button onclick="showModal()" >Open Upload Modal</button> -->
+
+    <!-- Modal for Upload Data -->
+    <div class="modal" id="uploadModal">
+        <div class="modal-content">
+            <span class="close" id="closeUploadModal">&times;</span>
+            <h2>Upload Data</h2>
+            <form id="uploadForm" method="post" enctype="multipart/form-data" action="{% url 'upload_data' %}">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="sno">S.No:</label>
+                    <input type="text" name="sno" id="sno" placeholder="Enter Serial Number" required>
+                </div>
+                <div class="form-group">
+                    <label for="name">Name:</label>
+                    <input type="text" name="name" id="name" placeholder="Enter Name" required>
+                </div>
+                <div class="form-group">
+                    <label for="docLink">Document Link:</label>
+                    <input type="file" name="doc_link" id="docLink" accept="application/pdf" required>
+                </div>
+                <div class="form-group">
+                    <label for="projectId">Project ID:</label>
+                    <input type="text" name="project_id" id="projectId" placeholder="Enter Project ID" required>
+                </div>
+                <div class="form-group">
+                    <label for="projectDetails">Project Details:</label>
+                    <textarea name="project_details" id="projectDetails" placeholder="Enter Project Details" required></textarea>
+                </div>
+                <div class="buttons">
+                    <button type="submit" class="submit-btn">Submit</button>
+                    <button type="button" class="cancel-btn" id="cancelUploadForm">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Get the modal and buttons
+        var modal = document.getElementById("uploadModal");
+        var closeBtn = document.getElementById("closeUploadModal");
+        var cancelBtn = document.getElementById("cancelUploadForm");
+
+        // Open the modal
+        function showModal() {
+            modal.style.display = "block";
+        }
+
+        // Close the modal when the close button or cancel button is clicked
+        closeBtn.onclick = function() {
+            modal.style.display = "none";
+        }
+
+        cancelBtn.onclick = function() {
+            modal.style.display = "none";
+        }
+
+        // Close the modal when clicked outside of it
+        window.onclick = function(event) {
+            if (event.target === modal) {
+                modal.style.display = "none";
+            }
+        }
+
+        // Optional: close the modal when the Escape key is pressed
+        window.onkeydown = function(event) {
+            if (event.key === "Escape") {
+                modal.style.display = "none";
+            }
+        }
+    </script>
+
+</body>
+</html>

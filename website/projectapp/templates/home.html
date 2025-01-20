@@ -1,0 +1,444 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hospital Website</title>
+    <link rel="icon" href="{% static 'favicon.ico' %}" type="image/x-icon">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+            color: #333;
+        }
+        h1, h2 {
+            text-align: center;
+            color: #0056b3;
+        }
+        form, table, .button-container {
+            margin: 20px auto;
+            max-width: 800px;
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        form div, table, .button-container {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input, select {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            padding: 10px 20px;
+            border: none;
+            color: white;
+            background-color: #0056b3;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        button:hover {
+            background-color: #003f7f;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        table th, table td {
+            padding: 10px;
+            border: 1px solid #ddd;
+        }
+        table th {
+            background-color: #0056b3;
+            color: #fff;
+        }
+        table tbody tr:hover {
+            background-color: #f1f1f1;
+        }
+        .button-container {
+            text-align: center;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        .modal.active {
+            display: block;
+        }
+        .modal input {
+            margin: 10px 0;
+            padding: 8px;
+            width: 100%;
+        }
+        .error-message {
+            color: red;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <h1>Welcome to the Hospital Projects Website</h1>
+
+    <!-- Search Form -->
+    <form method="get" action="">
+        {% csrf_token %}
+        <div>
+            <label for="search_type">Search by:</label>
+            {{ form.search_type }}
+        </div>
+        <div>
+            <label for="search_value">Enter Search Value:</label>
+            {{ form.search_value }}
+        </div>
+        <button type="submit">Search</button>
+        <a href="contact" style="display: inline-block; padding: 10px 20px; background-color: #007BFF; color: white; text-decoration: none; border-radius: 5px; font-family: Arial, sans-serif; font-size: 16px; text-align: center; box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); transition: background-color 0.3s ease, transform 0.3s ease;" 
+   onmouseover="this.style.backgroundColor='#0056b3'; this.style.transform='translateY(-2px)';" 
+   onmouseout="this.style.backgroundColor='#007BFF'; this.style.transform='translateY(0)';" 
+   onmousedown="this.style.backgroundColor='#004494';" 
+   onmouseup="this.style.backgroundColor='#0056b3';">
+   Go back
+</a>
+
+        
+        
+    </form>
+
+    <!-- Search Results -->
+    {% if projects %}
+    <h2>Search Results</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>S.No</th>
+                <th>Year</th>
+                <th>Document Link</th>
+                <th>Project ID</th>
+                <th>Project Details</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for project in projects %}
+                <tr>
+                    <td>{{ project.sno }}</td>
+                    <td>{{ project.year }}</td>
+                    <td>
+                        <!-- <a href="{{ MEDIA_URL }}path/to/fake/documents/project_{{ project.sno }}.pdf" download
+                        class="download-link" data-project-id="{{ project.project_sno }}">
+                            Download Project {{ project.project_id }}
+                        </a> -->
+                        <a href="{{ MEDIA_URL }}path/to/fake/documents/project_{{ project.sno }}.pdf" download class="download-link" data-project-id="{{ project.project_sno }}">
+                            Download Project {{ project.project_id }}
+                        </a>
+                        
+                    </td>
+                    <td>{{ project.project_id }}</td>
+                    <td>{{ project.project_details }}</td>
+                    <td>
+                        <form method="post" action="">
+                            {% csrf_token %}
+                            <input type="hidden" name="project_id" value="{{ project.id }}">
+                            {{ form.rating.label_tag }}<br>
+                            {{ form.rating }}
+                            <br>
+                            {{ form.review_text.label_tag }}<br>
+                            {{ form.review_text }}
+                            <br>
+                            <button type="submit">Submit Review</button>
+                        </form>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    {% if user.is_authenticated %}
+        <!-- Render the download button for authenticated users -->
+        <form method="get" action="{% url 'download_files_as_zip' year=projects.0.year %}">
+            <button id="downloadYearButton" type="submit">Download Files for {{ projects.0.year }}</button>
+        </form>
+    {% else %}
+        <!-- If not authenticated, show a login reminder -->
+        <a href="login"></a>
+    {% endif %}
+    {% else %}
+    <p>No results found</p>
+    {% endif %}
+
+    <!-- Create New User Button -->
+    <button class="btn" id="createUserBtn">Create New User</button>
+
+    <!-- Modal for Authentication Code -->
+    <div class="modal" id="authCodeModal">
+        <h3>Enter Authentication Code</h3>
+        <form id="authCodeForm">
+            <input type="text" name="auth_code" id="auth_code" placeholder="Enter Code" required>
+            <button type="submit">Submit</button>
+            <button type="button" class="cancel-btn">Cancel</button>
+            <p id="authCodeMessage" class="error-message"></p>
+        </form>
+    </div>
+
+    <!-- Modal for User Creation -->
+    <div class="modal" id="createUserModal">
+        <h3>Create New User</h3>
+        <form id="createUserForm">
+            <input type="text" name="username" id="newUsername" placeholder="New Username" required>
+            <input type="password" name="password" id="newPassword" placeholder="New Password" required>
+            <button type="submit">Create User</button>
+            <button type="button" class="cancel-btn">Cancel</button>
+            <p id="createUserMessage" class="error-message"></p>
+        </form>
+    </div>
+
+    <!-- Modal for User Verification -->
+<div class="modal" id="verificationModal">
+    <h3>Please Verify Your Details</h3>
+    <form id="verificationForm">
+        <input type="text" name="username" id="verificationUsername" placeholder="Username" required>
+        <input type="password" name="password" id="verificationPassword" placeholder="Password" required>
+        <button type="submit">Verify</button>
+        <button type="button" class="cancel-btn1">Cancel</button>
+        <p id="verificationMessage" class="error-message"></p>
+    </form>
+</div>
+
+
+<div class="modal" id="verificationModal1">
+    <h3>Please Verify Your Details</h3>
+    <form id="verificationForm">
+        <input type="text" name="username" id="verificationUsername" placeholder="Username" required>
+        <input type="password" name="password" id="verificationPassword" placeholder="Password" required>
+        <button type="submit">Verify</button>
+        <button type="button" class="cancel-btn2">Cancel</button>
+        <p id="verificationMessage" class="error-message"></p>
+    </form>
+</div>
+
+    <!-- JavaScript -->
+    <script>
+        
+        // Cancel button for Authentication Modal
+        document.querySelector('#authCodeModal .cancel-btn').addEventListener('click', () => {
+            document.getElementById('authCodeModal').classList.remove('active');
+        });
+         // Cancel button for Authentication Modal
+         document.querySelector('#verificationModal .cancel-btn1').addEventListener('click', () => {
+            document.getElementById('verificationModal').classList.remove('active');
+        });
+
+        // Cancel button for User Creation Modal
+        document.querySelector('#createUserModal .cancel-btn').addEventListener('click', () => {
+            document.getElementById('createUserModal').classList.remove('active');
+        });
+         // Cancel button for Authentication Modal
+         document.querySelector('#verificationModal1 .cancel-btn2').addEventListener('click', () => {
+            document.getElementById('verificationModal').classList.remove('active');
+        });
+
+        const createUserBtn = document.getElementById('createUserBtn');
+        const authCodeModal = document.getElementById('authCodeModal');
+        const authCodeForm = document.getElementById('authCodeForm');
+        const authCodeMessage = document.getElementById('authCodeMessage');
+        const createUserModal = document.getElementById('createUserModal');
+        const createUserForm = document.getElementById('createUserForm');
+        const createUserMessage = document.getElementById('createUserMessage');
+        const correctAuthCode = 'hp'; // Default authentication code
+
+        // Show the authentication modal on "Create New User" button click
+        createUserBtn.addEventListener('click', () => {
+            authCodeModal.classList.add('active');
+        });
+
+        // Handle authentication code form submission
+        authCodeForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const enteredCode = document.getElementById('auth_code').value;
+
+            if (enteredCode === correctAuthCode) {
+                authCodeModal.classList.remove('active');
+                createUserModal.classList.add('active');
+            } else {
+                authCodeMessage.textContent = 'Incorrect code, please try again or contact admin.';
+                authCodeMessage.style.display = 'block';
+            }
+        });
+
+        // Handle user creation form submission
+        createUserForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const username = document.getElementById('newUsername').value;
+            const password = document.getElementById('newPassword').value;
+
+            try {
+                const response = await fetch('/create_user/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': '{{ csrf_token }}',
+                    },
+                    body: JSON.stringify({ username, password }),
+                });
+                const result = await response.json();
+
+                if (result.success) {
+                    alert(result.message);
+                    createUserModal.classList.remove('active');
+                } else {
+                    createUserMessage.textContent = result.message;
+                    createUserMessage.style.display = 'block';
+                }
+            } catch (error) {
+                console.error('Error during user creation:', error);
+            }
+        });
+
+        // JavaScript for handling the download link click
+        document.querySelectorAll('.download-link').forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();  // Prevent the default link click action
+                const downloadUrl = e.target.href;  // Get the download URL (PDF link)
+                const projectId = e.target.getAttribute('data-project-id');  // Get project ID if needed
+
+                // Show the verification modal
+                const verificationModal = document.getElementById('verificationModal');
+                verificationModal.classList.add('active');
+
+                // Handle the form submission
+                const verificationForm = document.getElementById('verificationForm');
+                verificationForm.addEventListener('submit', (event) => {
+                    event.preventDefault();
+                    const username = document.getElementById('verificationUsername').value;
+                    const password = document.getElementById('verificationPassword').value;
+
+                    // Send an AJAX request to verify user details
+                    fetch('/verify_user/', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': '{{ csrf_token }}',
+                        },
+                        body: JSON.stringify({ username, password, project_id: projectId }),
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            // Close the verification modal
+                            verificationModal.classList.remove('active');
+                            // Redirect to the PDF download link
+                            downloadFile(downloadUrl)
+
+                        } else {
+                            // Show error message
+                            document.getElementById('verificationMessage').textContent = data.message;
+                            document.getElementById('verificationMessage').style.display = 'block';
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error during verification:', error);
+                    });
+                });
+
+                // Handle Cancel Button
+                document.querySelector('.cancel-btn').addEventListener('click', () => {
+                    // Close the verification modal when cancel is clicked
+                    verificationModal.classList.remove('active');
+                });
+            });
+        });
+
+        // Trigger the download
+        function downloadFile(downloadUrl, fileName) {
+            // Create a temporary <a> element
+            const link = document.createElement('a');
+            link.href = downloadUrl;
+            
+            // Set the 'download' attribute with a filename
+            link.download = fileName; 
+
+            // Append the link to the body (this step is necessary for Firefox)
+            document.body.appendChild(link);
+
+            // Programmatically click the link to start the download
+            link.click();
+
+            // Remove the link after the download is triggered
+            document.body.removeChild(link);
+        }
+
+        // Get the "Download Files for [Year]" button
+const downloadYearButton = document.getElementById('downloadYearButton');
+
+// Attach click event to trigger verification modal
+downloadYearButton.addEventListener('click', (e) => {
+    e.preventDefault(); // Prevent the default form submission
+
+    // Show the verification modal
+    const verificationModal = document.getElementById('verificationModal1');
+    verificationModal.classList.add('active');
+
+    // Handle the verification form submission
+    const verificationForm = document.getElementById('verificationForm');
+
+    // Remove any existing event listener on the verification form to prevent duplicate submissions
+    verificationForm.replaceWith(verificationForm.cloneNode(true));
+    const newVerificationForm = document.getElementById('verificationForm');
+
+    newVerificationForm.addEventListener('submit', (event) => {
+        event.preventDefault();
+
+        // Get user input
+        const username = document.getElementById('verificationUsername').value;
+        const password = document.getElementById('verificationPassword').value;
+
+        // Send an AJAX request to verify user details
+        fetch('/verify_user/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}',
+            },
+            body: JSON.stringify({ username, password }),
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Close the verification modal
+                verificationModal.classList.remove('active');
+
+                // Programmatically submit the form to download the files
+                const form = downloadYearButton.closest('form');
+                form.submit();
+            } else {
+                // Show error message
+                document.getElementById('verificationMessage').textContent = data.message;
+                document.getElementById('verificationMessage').style.display = 'block';
+            }
+        })
+        .catch(error => {
+            console.error('Error during verification:', error);
+        });
+    });
+
+    });
+    </script>
+</body>
+</html>

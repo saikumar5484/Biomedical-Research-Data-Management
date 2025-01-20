@@ -23,7 +23,7 @@ def distribute_projects(start_year, end_year, total_projects):
 # Start year, end year, and total projects
 start_year = 1987
 end_year = 2024
-total_projects = 1500  # Total projects to distribute
+total_projects = 1200  # Total projects to distribute
 
 # Base document path
 base_document_path = "path/to/fake/documents"
@@ -50,9 +50,27 @@ for year, project_count in year_project_counts.items():
         ws.append([serial_number, year, document_link, project_id, project_details])
         serial_number += 1
 
-# Save the workbook
-file_path = os.path.expanduser("~/Hospital_Projects_Data1.xlsx")
-wb.save(file_path)
+# Dynamically get the location of manage.py
+current_directory = os.path.dirname(os.path.abspath(__file__))  # Directory where the script is located
+file_path = os.path.join(current_directory, "Hospital_Projects_Data1.xlsx")
 
-print(f"Hospital projects data sheet created successfully at: {file_path}")
+# Debug: Verify workbook data
+print(f"Sheet names: {wb.sheetnames}")
+print(f"First row of data: {list(ws.iter_rows(min_row=1, max_row=1, values_only=True))}")
+print(f"Attempting to save file to: {file_path}")
 
+# Save the workbook with error handling
+try:
+    wb.save(file_path)
+    print(f"File saved successfully at: {file_path}")
+except Exception as e:
+    print(f"Failed to save file: {e}")
+
+# Suggest a fallback directory if saving fails
+fallback_path = os.path.expanduser("~/Desktop/Hospital_Projects_Data1.xlsx")
+if not os.path.exists(file_path):
+    try:
+        wb.save(fallback_path)
+        print(f"File saved to fallback location: {fallback_path}")
+    except Exception as e:
+        print(f"Failed to save file to fallback location: {e}")

@@ -22,5 +22,5 @@ def create_test_pdf(file_name):
     print(f"PDF created at: {file_path}")
 
 # Generate multiple PDFs
-for i in range(1, 6):  # Create 5 sample PDFs
+for i in range(1, 1201):  # Create 1200 sample PDFs
     create_test_pdf(f'project_{i}.pdf')
